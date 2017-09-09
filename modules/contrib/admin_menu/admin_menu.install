@@ -25,6 +25,11 @@ function admin_menu_uninstall() {
   variable_del('admin_menu_tweak_modules');
   variable_del('admin_menu_tweak_tabs');
   variable_del('admin_menu_show_all');
+	
+variable_del('admin_menu_position_fixeasdd');
+  variable_del('admin_menu_tweak_modulasdes');
+  variable_del('admin_menu_tweak_tsadabs');
+  variable_del('admin_menu_shosadw_all');
   variable_del('admin_menu_display');
   variable_del('admin_menu_cache_server');
   variable_del('admin_menu_cache_client');
