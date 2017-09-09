@@ -8,7 +8,8 @@
         "wikimedia/composer-merge-plugin": "~1.4",
         "drupal/console": "^1.0",
         "abraham/twitteroauth": "^0.7.4",
-        "drupal-composer/drupal-scaffold": "^2.3"
+        "drupal-composer/drupal-scaffold": "^2.3",
+        "thom8/drupal8-vagrant": "^0.0.3"
     },
     "replace": {
         "drupal/core": "~8.3"
