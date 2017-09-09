@@ -1,0 +1,5 @@
+name: Sempra Twitter
+type: module
+description: Module that create a twitter block.
+core: 8.x
+package: Sempra

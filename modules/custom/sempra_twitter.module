@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains sempra_twitter.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sempra_twitter_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sempra_twitter module.
+    case 'help.page.sempra_twitter':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Module that create a twitter block.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sempra_twitter_theme() {
+  return [
+    'sempra_twitter' => [
+      'render element' => 'children',
+    ],
+  ];
+}
