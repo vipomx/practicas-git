@@ -1,0 +1,477 @@
+<?php
+/**
+ * @file
+ * Bootstrap sub-theme.
+ *
+ * Place your custom PHP code in this file.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function semprab_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+    $content_type = $node->bundle();
+    $suggestions[] = 'page__' . $content_type;
+  }
+
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  switch ($route_name) {
+    case 'view.bio.page_1':
+      $suggestions[] = 'page__view__bio';
+      break;
+
+    case 'view.media_room.media_room_page':
+      $suggestions[] = 'page__view__media_room_page';
+      break;
+
+    case 'view.spotlight_articles_solr.page_1':
+      $suggestions[] = 'page__view__spotlight_articles';
+      break;
+
+    /*case 'view.search_solr.page':
+      $suggestions[] = 'page__view__search_solr';
+      break;*/
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function semprab_theme_suggestions_taxonomy_term_alter(&$suggestions, $variables) {
+  $elements = $variables['elements'];
+
+  if (isset($elements['#taxonomy_term']) && isset($elements['#theme']) && isset($elements['#view_mode'])) {
+    $term = $elements['#taxonomy_term'];
+
+    if (is_object($term)) {
+      $suggestions[] = $elements['#theme'] . '__' . $term->getVocabularyId() . '__' . $elements['#view_mode'];
+      $suggestions[] = $elements['#theme'] . '__' . $term->id() . '__' . $elements['#view_mode'];
+    }
+  }
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function semprab_page_attachments_alter(array &$page) {
+  $viewport = array(
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => array(
+      'name' => 'viewport',
+      'content' => 'width=device-width, initial-scale=0.9, maximum-scale=1, user-scalable=no',
+    ),
+  );
+
+  $optimize = array(
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => array(
+      'name' => 'MobileOptimized',
+      'content' => '375',
+    ),
+  );
+
+  $page['#attached']['html_head'][] = [$optimize, 'MobileOptimized'];
+  $page['#attached']['html_head'][] = [$viewport, 'viewport'];
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function semprab_preprocess_html(&$variables) {
+  /*kint_require();
+  Kint::$maxLevels = 2;*/
+
+  // Load the current node.
+  if (isset($variables['page']['above_all'])) {
+    $variables['attributes']['class'][] = 'custom-stickynav-present';
+  }
+
+  if (isset($variables['page']['ticker'])) {
+    $variables['attributes']['class'][] = 'custom-stickynav-present';
+  }
+
+  $variables['language_status'] = \Drupal::config('sempra.languageform')->get('language_status') ?: false;
+
+  if (($node = \Drupal::routeMatch()->getParameter('node'))) {
+    semprab_preprocess_html_node($variables, $node);
+  }
+  else {
+    if ($variables['language_status']) {
+      $variables['attributes']['class'][] = 'language-toggle-enabled';
+    }
+    else {
+      $variables['attributes']['class'][] = 'language-toggle-disabled';
+    }
+  }
+
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+    if ($node->id() == 1718) {
+      $variables['attributes']['class'][] = 'news-room-lp';
+    }
+  }
+
+  switch ($route_name) {
+    case 'view.press_release_solr.page_1':
+      $variables['attributes']['class'][] = 'press-release-list';
+      break;
+
+    case 'view.bio.page_1':
+      $variables['attributes']['class'][] = 'leadership-list';
+      break;
+
+    case 'view.spotlight_articles_solr.page_1':
+      $variables['attributes']['class'][] = 'spotlight-articles-list';
+      break;
+
+    case 'view.media_room.media_room_page':
+      $variables['attributes']['class'][] = 'media-room';
+      break;
+
+    case 'search.view':
+    case 'view.search_solr.page':
+      $variables['attributes']['class'][] = 'search-solr';
+      break;
+  }
+}
+
+/**
+ * Helper node function for hook_preprocess_html_node().
+ */
+function semprab_preprocess_html_node_language(&$variables, $node) {
+  if ($variables['language_status']) {
+    $lang_enabled = count($node->getTranslationLanguages(FALSE));
+    if ($lang_enabled > 0) {
+      $variables['attributes']['class'][] = 'language-toggle-enabled';
+    }
+    else {
+      $variables['attributes']['class'][] = 'language-toggle-disabled';
+    }
+  }
+  else {
+    $variables['attributes']['class'][] = 'language-toggle-disabled';
+  }
+}
+  
+/**
+ * Helper node function for hook_preprocess_html().
+ */
+function semprab_preprocess_html_node(&$variables, $node) {
+  // Language Detection.
+  semprab_preprocess_html_node_language($variables, $node);
+
+  if ($node->field_content_block) {
+    foreach ($node->field_content_block as $paragraph_raw) {
+      if (!($paragraph = entity_load('paragraph', $paragraph_raw->target_id))) {
+        continue;
+      }
+      
+      if ($paragraph->getType() == 'hero') {
+        $variables['attributes']['class'][] = 'hero-present';
+        break;
+      }
+    }
+  }
+
+  if (isset($node->field_hero->target_id)) {
+    $paragraph = entity_load('paragraph',  $node->field_hero->target_id);
+    if ($paragraph->getType() == 'hero') {
+      $variables['attributes']['class'][] = 'hero-present';
+    }
+  }
+
+  // Add custom class to the corporate values page.
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if($node) {
+    if ($node->id() == 69) {
+      $variables['attributes']['class'][] = 'corporate-values';
+    }
+  }
+
+  // Add custom class to the newsroom page.
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if($node) {
+    if ($node->id() == 1718) {
+      $variables['attributes']['class'][] = 'newsroom-page';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_taxonomy_term().
+ */
+function semprab_preprocess_taxonomy_term(&$variables) {
+  $term = $variables['elements']['#taxonomy_term'];
+  static $i;
+  $i = isset($i) ? ($i+1) : 1;
+  $name = strtolower($term->name->getString());
+  $options = [
+    'query' => [
+      'pr[0]' => ('category:' . $name),
+    ],
+  ];
+  $url = \Drupal\Core\Url::fromRoute('view.press_release_solr.page_1', [], $options);
+  $variables['url'] = $url;
+}
+
+/**
+ *
+ */
+/*function semprab_preprocess_node__press_release(&$variables) {
+  //http://sempra.loc/newsroom/news-releases?pr%5B0%5D=category%3Acameron%20lng
+  //http://sempra.loc/newsroom/news-releases?pr[0]=category:cameron lng
+  $variables['content']['body_html'] = [
+    '#type' => 'inline_template',
+    '#template' => $variables['content']['body'],
+  ];
+}*/
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function semprab_preprocess_node(&$variables) {
+  $node = $variables['elements']['#node'];
+  $bundle = $node->bundle();
+  $function = "semprab_preprocess_node__{$bundle}";
+  if (function_exists($function)) {
+    call_user_func($function, $variables);
+  }
+
+  $variables['url_list'] = $variables['url'];
+  if (isset($node->_referringItem)) {
+    $parent = $node->_referringItem->getEntity();
+    if ($parent->bundle() == 'bio_list') {
+      $id = $parent->id();
+      $options = [
+        'absolute' => TRUE, 
+        'query' => [
+          'list' => $id
+        ]
+      ];
+      $url = \Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $node->id()], $options);
+      $url = $url->toString();
+      $variables['url_list'] = $url;
+    }
+  }
+
+  $variables['#cache']['contexts'][] = 'url.path';
+  $variables['#cache']['contexts'][] = 'url.query_args';
+  static $i;
+  $i = isset($i) ? ($i+1) : 1;
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function semprab_preprocess_paragraph(&$variables) {
+  $elements = $variables['elements'];
+  if (($parent_entity = $elements['#paragraph']->getParentEntity())) {
+    $variables['parent_id'] = $parent_entity->id();
+    $variables['parent_type'] = $elements['#paragraph']->parent_type->getString();
+    $bundle = $parent_entity->bundle();
+    if ($bundle == 'grid_block') {
+      $column_count = $parent_entity->field_column_count[0]->value;
+      switch ($column_count) {
+        case 1:
+          $col_class = 'col-xs-12';
+          break;
+
+        case 2:
+          $col_class = 'col-xs-12 col-sm-6';
+          break;
+
+        case 3:
+          $col_class = 'col-xs-12 col-sm-4';
+          break;
+      }
+      $variables['col_class'] = $col_class;
+    }
+  }
+  $variables['entity_id'] = $elements['#paragraph']->id();
+  
+  try {
+    $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
+  }
+  catch (Exception $e) {
+    $variables['is_front'] = FALSE;
+  }
+  //$variables['#cache']['contexts'][] = 'url.path.is_front';
+  
+  semprab_preprocess_paragraph_hero($variables);
+}
+
+function semprab_preprocess_paragraph_hero(&$variables) {
+  $elements = $variables['elements'];
+  if ($elements['#paragraph']->getType() != 'hero') {
+    return false;
+  }
+  
+  if (!isset($elements['#paragraph']->field_image_style[0]->value)) {
+    return false;
+  }
+  
+  if (empty($elements['#paragraph']->field_image_style[0]->value)) {
+    return false;
+  }
+  
+  if (!isset($elements['#paragraph']->field_hero_bg_image[0]->target_id)) {
+    return false;
+  }
+  
+  if (empty($elements['#paragraph']->field_hero_bg_image[0]->target_id)) {
+    return false;
+  }
+  
+  $image_style = $elements['#paragraph']->field_image_style[0]->value;
+  $hero_id = $elements['#paragraph']->field_hero_bg_image[0]->target_id;
+  $hero_entity = \Drupal::entityManager()->getStorage('file')->load($hero_id);
+  $view_builder = \Drupal::entityManager()->getViewBuilder('file');
+  $hero = $view_builder->view($hero_entity, $image_style);
+  $variables['content']['field_hero_bg_image'][0] = $hero;
+
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function semprab_preprocess_block(&$variables) {
+  if ($variables['elements']['#id'] == 'semprab_block_language_switcher') {
+    $language =  \Drupal::languageManager()->getCurrentLanguage()->getName();
+    $variables['content']['#active'] = substr($language, 0, 3);
+    $variables['content']['#links']['en']['title'] = array(
+      '#type' => 'markup',
+      '#markup' => '<span class="mobile">ENG</span><span class="desktop">English</span>',
+    );
+    $variables['content']['#links']['es']['title'] = array(
+      '#type' => 'markup',
+      '#markup' => '<span class="mobile">SPA</span><span class="desktop">Spanish</span>',
+    );
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for form templates.
+ * @param array $suggestions
+ * @param array $variables
+ */
+function semprab_theme_suggestions_block_alter(array &$suggestions, array $variables) {
+  // Block suggestions for custom block bundles.
+  if (isset($variables['elements']['content']['#block_content'])) {
+    array_splice($suggestions, 1, 0, 'block__bundle__' . $variables['elements']['content']['#block_content']->bundle());
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for form templates.
+ * @param array $suggestions
+ * @param array $variables
+ */
+function semprab_theme_suggestions_facets_item_list_alter(array &$suggestions, array $variables) {
+  if ($variables['context']['list_style'] == 'dropdown') {
+    $suggestions[] = 'facets_item_list__dropdown';
+    $suggestions[] = 'facets_item_list__dropdown__' . $variables['attributes']['data-drupal-facet-id'];
+  }
+}
+
+
+function semprab_preprocess_video_embed_iframe(&$variables) {
+  static $i;
+  $i = isset($i) ? $i+1 : 1;
+  $variables['attributes']['id'] = 'video-embed-iframe-' . $i;
+}
+
+function semprab_preprocess_facets_item_list(&$variables) {
+  $variables['dropdown_id'] = 'dropdown-' . $variables['attributes']['data-drupal-facet-id'];
+  semprab_preprocess_facets_item_list_url_current($variables);
+  semprab_preprocess_facets_item_list_title($variables);
+}
+
+function semprab_preprocess_facets_item_list_title(&$variables) {
+  $title = $all_title = $variables['attributes']['data-drupal-facet-alias'];
+
+  switch ($variables['attributes']['data-drupal-facet-id']) {
+    case 'press_release_category':
+      $all_title = t('All Companies');
+      $title = t('Companies');
+      break;
+
+    case 'year':
+    case 'spotlight_articles_year':
+      $all_title = t('All Years');
+      $title = t('Years');
+      break;
+
+    case 'spotlight_articles_category':
+      $all_title = t('All Categories');
+      $title = t('Categories');
+      break;
+
+    case 'facets_search_content_type':
+      $all_title = t('All Content Types');
+      $title = t('Content Types');
+      break;
+  }
+
+  $title = semprab_get_facet_filter_title($title, $variables);
+  $variables['title_custom'] = $title;
+  $variables['title_all_custom'] = $all_title;
+}
+
+function semprab_get_facet_filter_title($title, $variables) {
+  foreach ($variables['items'] as $item) {
+    if ($item['value']['#title']['#is_active'] == true) {
+      $title = $item['value']['#title']['#value'];
+      break;
+    }
+  }
+
+  return $title;
+}
+
+function semprab_preprocess_facets_item_list_url_current(&$variables) {
+  $url_current = \Drupal::service('path.current')->getPath();
+  $filters_active = [];
+
+  switch ($variables['attributes']['data-drupal-facet-id']) {
+    case 'press_release_category':
+      $filters_active = semprab_get_facet_filter_off('pr', 'category');
+      break;
+
+    case 'year':
+      $filters_active = semprab_get_facet_filter_off('pr', 'year');
+      break;
+
+    default:
+      break;
+  }
+
+  if (count($filters_active) > 0) {
+    $query_string = implode('&', $filters_active);
+    $url_current .= '?' . ($query_string);
+  }
+  $variables['url_current'] = $url_current;
+}
+
+function semprab_get_facet_filter_off($key, $string) {
+  $filters_active = [];
+  if (isset($_GET[$key])) {
+    $pr = $_GET[$key];
+    $pattern = "/(.+?):(.+)/";
+    $i = 0;
+    foreach ($pr as $filter) {
+      if (preg_match($pattern, $filter, $match)) {
+        if ($match[1] != $string) {
+          $filters_active[] = "{$key}[{$i}]={$filter}";
+          $i++;
+        }
+      }
+    }
+  }
+  return $filters_active;
+}
+
