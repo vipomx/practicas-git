@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1cbcb5cee894a3c9c47aef15e793f06",
+    "content-hash": "5860768829c6bf360c37644abc9064fa",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -3901,6 +3901,48 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2017-06-01T20:52:29+00:00"
+        },
+        {
+            "name": "thom8/drupal8-vagrant",
+            "version": "0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thom8/drupal8-vagrant.git",
+                "reference": "dbe3e735fca6487c3adfa769997bc62b54f78626"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thom8/drupal8-vagrant/zipball/dbe3e735fca6487c3adfa769997bc62b54f78626",
+                "reference": "dbe3e735fca6487c3adfa769997bc62b54f78626",
+                "shasum": ""
+            },
+            "require-dev": {
+                "beet/box": "^0.7"
+            },
+            "type": "project",
+            "extra": {
+                "beetbox": {
+                    "vagrant_ip": "192.168.88.88",
+                    "beet_domain": "d8.local",
+                    "beet_root": "{{ beet_base }}/docroot",
+                    "beet_site_name": "Drupal 8 Sprint Box",
+                    "drupal_create_makefile": true,
+                    "drupal_make_working_copy": true,
+                    "drupal_make_core_branch": "8.4.x",
+                    "drupal_build_makefile": true,
+                    "drupal_install_site": true,
+                    "drupal_account_name": "admin",
+                    "drupal_account_pass": "admin",
+                    "php_memory_limit": "284M",
+                    "drush_version": "9.0.0-alpha1"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Simple Drupal 8 Development Environment",
+            "time": "2017-07-25T10:38:14+00:00"
         },
         {
             "name": "twig/twig",
