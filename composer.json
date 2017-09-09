@@ -9,7 +9,8 @@
         "drupal/console": "^1.0",
         "abraham/twitteroauth": "^0.7.4",
         "drupal-composer/drupal-scaffold": "^2.3",
-        "thom8/drupal8-vagrant": "^0.0.3"
+        "thom8/drupal8-vagrant": "^0.0.3",
+        "chrishemmings/oauth2-drupal": "^2.0"
     },
     "replace": {
         "drupal/core": "~8.3"
