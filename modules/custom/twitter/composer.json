@@ -1,0 +1,14 @@
+{
+  "name": "drupal/sempra_twitter",
+  "type": "drupal-module",
+  "description": "Module that create a twitter block.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/sempra_twitter",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/sempra_twitter",
+    "source": "http://cgit.drupalcode.org/sempra_twitter"
+  },
+  "require": { }
+}

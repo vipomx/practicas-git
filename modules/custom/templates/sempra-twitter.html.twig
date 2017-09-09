@@ -1,0 +1,55 @@
+<div class="twitter-carousel-wrapper">
+	<div class="twitter-carousel container">
+		<div class="twitter-block-inner-wrapper row">
+			<div class="tweets-carousel-wrapper col-sm-12 col-md-8 col-lg-9">
+				{% if children['#twitter_posts'] %}
+					<div class="tweets-carousel-inner-wrapper owl-carousel">
+						{% for tweet in children['#twitter_posts'] %}
+							<div class="tweet-card">
+								<div class="tweet-card-inner">
+								  <div class="ofh">
+  									<div class="data">
+    									<div class="timeago">
+  											{{ tweet.date }}
+  										</div>
+  										<h4><a href="https://twitter.com/{{ tweet.uname }}" target="_blank">@{{ tweet.uname }}</a></h4>
+  									</div>
+  									<div class="body">
+  										{{ tweet.text }}
+  									</div>
+  								</div>
+								</div>
+								<div class="tweet-controls">
+									<ul class="controls">
+										<li class="control reply">
+											<a href="https://twitter.com/intent/tweet?in_reply_to={{ tweet.id }}" target="popup" class="nwindow">Reply</a>	
+										</li>
+										<li class="control retweet">
+											<a href="https://twitter.com/intent/retweet?tweet_id={{ tweet.id }}" target="popup" class="nwindow">{{ tweet.retweet_count }}</a>
+										</li>
+										<li class="control likes">
+											<a href="https://twitter.com/intent/like?tweet_id={{ tweet.id }}" target="popup" class="nwindow">{{ tweet.favorite_count }}</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				{% endif %}
+			</div>
+			<div class="social-links-wrapper col-sm-12 col-md-4 col-lg-3">
+				<div class="social-links-container">
+					<h3>{{ 'Follow Sempra on'|trans }}</h3>
+					<ul class="social-icons">
+						<li class="social twitter">
+							<a href="https://twitter.com/sempraenergy" target="_blank">Twitter</a>	
+						</li>
+						<li class="social linkedin">
+							<a href="https://www.linkedin.com/company/165918?trk=tyah" target="_blank">Linkedin</a>	
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

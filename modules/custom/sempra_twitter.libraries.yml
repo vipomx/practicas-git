@@ -1,0 +1,9 @@
+twitter:
+  js:
+    js/twitterFetcher.js: {}
+    js/sempra.twitter.js: {}
+    
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
